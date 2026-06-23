@@ -1,0 +1,23 @@
+name: VoidRpWealthTax
+version: ${version}
+main: ru.voidrp.wealthtax.WealthTaxPlugin
+api-version: "1.21"
+depend:
+  - Vault
+soft-depend:
+  - LuckPerms
+
+commands:
+  wealthtax:
+    description: Управление налоговой системой
+    aliases: [tax, налог]
+    permission: voidrp.wealthtax.admin
+    usage: /wealthtax [info|run|preview|tiers]
+
+permissions:
+  voidrp.wealthtax.admin:
+    description: Управление WealthTax
+    default: op
+  voidrp.tax.exempt:
+    description: Освобождение от налога на богатство
+    default: false
