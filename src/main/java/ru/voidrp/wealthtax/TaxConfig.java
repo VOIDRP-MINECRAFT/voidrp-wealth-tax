@@ -18,6 +18,7 @@ public class TaxConfig {
     private final double nationTreasuryRate;
     private final String backendUrl;
     private final String gameAuthSecret;
+    private final String serverSlug;
 
     public TaxConfig(FileConfiguration cfg) {
         List<?> raw = cfg.getList("tiers");
@@ -46,6 +47,7 @@ public class TaxConfig {
         nationTreasuryRate    = cfg.getDouble("nation-treasury.rate", 0.05);
         backendUrl            = cfg.getString("backend.url", "");
         gameAuthSecret        = cfg.getString("backend.game-auth-secret", "");
+        serverSlug            = cfg.getString("backend.server-slug", "");
     }
 
     /**
@@ -73,4 +75,5 @@ public class TaxConfig {
     public double getNationTreasuryRate()     { return nationTreasuryRate; }
     public String getBackendUrl()             { return backendUrl; }
     public String getGameAuthSecret()         { return gameAuthSecret; }
+    public String getServerSlug()             { return serverSlug; }
 }

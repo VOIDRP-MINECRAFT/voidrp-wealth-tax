@@ -110,13 +110,16 @@ public class TaxScheduler {
     private void applyNationTreasuryTax() {
         try {
             var body = String.format("{\"rate\":%.4f}", config.getNationTreasuryRate());
-            var request = java.net.http.HttpRequest.newBuilder()
+            var requestBuilder = java.net.http.HttpRequest.newBuilder()
                     .uri(java.net.URI.create(config.getBackendUrl() + "/api/v1/nation-stats/nations/treasury-tax"))
                     .header("Content-Type", "application/json")
                     .header("X-Game-Auth-Secret", config.getGameAuthSecret())
                     .POST(java.net.http.HttpRequest.BodyPublishers.ofString(body))
-                    .timeout(java.time.Duration.ofSeconds(10))
-                    .build();
+                    .timeout(java.time.Duration.ofSeconds(10));
+            if (config.getServerSlug() != null && !config.getServerSlug().isBlank()) {
+                requestBuilder.header("X-Server-Slug", config.getServerSlug());
+            }
+            var request = requestBuilder.build();
             var response = java.net.http.HttpClient.newHttpClient()
                     .send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
             plugin.getLogger().info("[Налог] Казна государств: статус " + response.statusCode()
