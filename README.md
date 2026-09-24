@@ -1,82 +1,88 @@
 # 💰 VoidRP Wealth Tax
 
-> Paper 1.21.1 плагин — прогрессивный налог на богатство для балансировки экономики сервера.
+> Paper-плагин VoidRP: прогрессивный налог на богатство, который раз в неделю выводит лишние деньги из экономики,
+> чтобы инфляция не обесценивала заработок новых игроков.
 
-![Paper](https://img.shields.io/badge/Paper-1.21.1-00AF54)
+![Paper](https://img.shields.io/badge/Paper%20%2F%20Mohist-1.21.1-00AF54)
 ![Java](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)
 ![Vault](https://img.shields.io/badge/depends-Vault-yellow)
+[![Build](https://github.com/VOIDRP-MINECRAFT/voidrp-wealth-tax/actions/workflows/build.yml/badge.svg)](https://github.com/VOIDRP-MINECRAFT/voidrp-wealth-tax/actions/workflows/build.yml)
 ![License](https://img.shields.io/badge/license-proprietary-red)
 
 ---
 
-## 🗺️ Место в экосистеме
+## 🗺️ Как это работает
 
+```mermaid
+flowchart LR
+    T["⏱️ раз в interval-hours<br/>(168 ч = неделя)"] --> L["Все игроки с аккаунтом Vault"]
+    L --> X{"voidrp.tax.exempt?"}
+    X -- да --> SKIP["пропуск"]
+    X -- нет --> C["Налог по ступеням"]
+    C --> W["💸 списать с баланса<br/>деньги выходят из экономики"]
+    W --> N["уведомить игрока онлайн,<br/>записать в лог"]
+    T -. "nation-treasury.enabled" .-> NT["POST /api/v1/nation-stats/nations/treasury-tax<br/>налог на казны наций"]
 ```
-  Minecraft Server — economy tick
-        │ Vault API (читает баланс)
-        ▼
-  voidrp-wealth-tax
-        │ Vault API (списывает налог)
-        ▼
-  Казна нации (через gamesync-plugin)
-```
 
-Налог автоматически перераспределяет богатство: чем больше у игрока денег, тем выше процент. Собранные средства направляются в казну государства игрока.
+## 📈 Ступени (как у прогрессивного налога)
 
----
+Каждая ставка применяется **только к своей части** баланса:
 
-## ✨ Возможности
-
-- **Прогрессивные ставки** — налог растёт вместе с балансом игрока
-- **Автоматическое списание** — по расписанию (настраиваемый интервал)
-- **Интеграция с нациями** — собранный налог зачисляется в казну нации
-- **Исключения** — возможность освободить игроков/группы от налога
-- **Уведомления** — игрок получает сообщение о списанном налоге
-
----
-
-## 📋 Требования
-
-| Компонент | Версия |
+| Часть баланса | Ставка |
 |---|---|
-| Paper / Mohist | 1.21.1 |
-| Java | 21 |
-| Vault | обязательно |
+| до 100 000 | 0% |
+| 100 000 – 500 000 | 2% |
+| 500 000 – 2 000 000 | 5% |
+| больше 2 000 000 | 10% |
+
+**Пример:** баланс 1 000 000 → 400 000 × 2% + 500 000 × 5% = **33 000** за неделю.
 
 ---
 
-## 🚀 Сборка и установка
+## ⌨️ Команды
 
-```bash
-cd voidrp_wealth_tax
-./gradlew shadowJar
-# → build/libs/voidrp-wealth-tax-*.jar
-```
+| Команда | Что делает |
+|---|---|
+| `/wealthtax info` (`/tax`, `/налог`) | Когда был последний сбор, когда следующий, интервал |
+| `/wealthtax preview` | Сколько заплатил бы каждый игрок прямо сейчас |
+| `/wealthtax run` | Собрать налог немедленно |
+| `/wealthtax tiers` | Показать ступени |
 
-1. Скопировать jar в `plugins/`
-2. Перезапустить сервер
-3. Настроить `plugins/VoidRpWealthTax/config.yml`
+Все команды — для `voidrp.wealthtax.admin`. Освобождение от налога — право `voidrp.tax.exempt`.
 
 ---
 
 ## ⚙️ Конфигурация
 
+`plugins/VoidRpWealthTax/config.yml`:
+
 ```yaml
-# config.yml
-interval_minutes: 60        # интервал списания налога
-brackets:
-  - min: 0
-    max: 1000000
-    rate: 0.0               # 0% до 1М
-  - min: 1000000
-    max: 10000000
-    rate: 0.005             # 0.5% от 1М до 10М
-  - min: 10000000
-    max: -1                 # -1 = без верхней границы
-    rate: 0.01              # 1% свыше 10М
-nation_treasury: true       # зачислять в казну нации
-notify_players: true
+interval-hours: 168
+notify-online: true
+log-to-console: true
+tiers:
+  - { threshold: 0,       rate: 0.00 }
+  - { threshold: 100000,  rate: 0.02 }
+  - { threshold: 500000,  rate: 0.05 }
+  - { threshold: 2000000, rate: 0.10 }
+nation-treasury:          # необязательно: налог на казны наций через бэкенд
+  enabled: false
+  rate: 0.05
+backend:
+  url: ""
+  game-auth-secret: ""    # X-Game-Auth-Secret этого сервера
+  server-slug: ""
 ```
+
+---
+
+## 🚀 Сборка
+
+```bash
+./gradlew build
+```
+
+Требования: Paper/Mohist 1.21.1, Java 21, Vault (обязательно), LuckPerms (по желанию).
 
 ---
 
@@ -84,8 +90,8 @@ notify_players: true
 
 | Репо | Связь |
 |---|---|
-| [voidrp-gamesync-plugin](https://github.com/VOIDRP-MINECRAFT/voidrp-gamesync-plugin) | Получает средства в казну нации |
-| [minecraft-backend](https://github.com/VOIDRP-MINECRAFT/minecraft-backend) | Хранит транзакции казны |
+| [minecraft-backend](https://github.com/VOIDRP-MINECRAFT/minecraft-backend) | Налог на казны наций (`/nation-stats/nations/treasury-tax`) |
+| [voidrp-gamesync-plugin](https://github.com/VOIDRP-MINECRAFT/voidrp-gamesync-plugin) | Экономика сервера, казна наций |
 
 ---
 
