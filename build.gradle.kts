@@ -1,6 +1,6 @@
 plugins {
     java
-    id("com.gradleup.shadow") version "8.3.10"
+    id("com.gradleup.shadow") version "8.3.11"
 }
 
 group = "ru.voidrp"
@@ -21,7 +21,7 @@ dependencies {
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") {
         isTransitive = false
     }
-    compileOnly("net.luckperms:api:5.4")
+    compileOnly("net.luckperms:api:5.5")
 }
 
 tasks {
