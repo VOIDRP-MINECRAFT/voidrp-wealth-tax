@@ -1,13 +1,17 @@
-# 💰 VoidRP Wealth Tax
+<p align="center"><img src=".github/assets/banner.jpg" alt="VoidRP Wealth Tax" width="100%"></p>
 
-> Paper-плагин VoidRP: прогрессивный налог на богатство, который раз в неделю выводит лишние деньги из экономики,
-> чтобы инфляция не обесценивала заработок новых игроков.
+<div align="center">
 
 ![Paper](https://img.shields.io/badge/Paper%20%2F%20Mohist-1.21.1-00AF54)
 ![Java](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)
 ![Vault](https://img.shields.io/badge/depends-Vault-yellow)
 [![Build](https://github.com/VOIDRP-MINECRAFT/voidrp-wealth-tax/actions/workflows/build.yml/badge.svg)](https://github.com/VOIDRP-MINECRAFT/voidrp-wealth-tax/actions/workflows/build.yml)
 ![License](https://img.shields.io/badge/license-proprietary-red)
+
+</div>
+
+> Paper-плагин VoidRP: прогрессивный налог на богатство, который раз в неделю выводит лишние деньги из экономики,
+> чтобы инфляция не обесценивала заработок новых игроков.
 
 ---
 
